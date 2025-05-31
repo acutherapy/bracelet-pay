@@ -2,43 +2,36 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Stripe QR Payment</title>
+  <title>扫码支付</title>
 </head>
 <body>
   <h1>💰 输入金额并扫码付款</h1>
-  <label>金额（美元）：<input type="number" id="amount" step="0.01" placeholder="例如 49.99" /></label><br/><br/>
-  <label>备注 / 姓名 / 款式：<input type="text" id="note" placeholder="例如 Lisa, 粉水晶 + 生命数字 7" /></label><br/><br/>
+  <label>金额（美元）：
+    <input type="number" id="amount" step="0.01" placeholder="例如 49.99" />
+  </label><br/><br/>
+  <label>备注 / 姓名 / 款式：
+    <input type="text" id="note" placeholder="例如 Lisa, 粉水晶" />
+  </label><br/><br/>
   <button onclick="generateQRCode()">生成二维码</button>
   <br/><br/>
-  <img id="qr" src="" alt="二维码将显示在这里" width="300" />
+  <img id="qr" alt="二维码将显示在这里" width="300" />
 
   <script>
-    async function generateQRCode() {
-      const amountInput = document.getElementById('amount').value;
-      const noteInput = document.getElementById('note').value;
+    function generateQRCode() {
+      const amount = document.getElementById("amount").value;
+      const note = document.getElementById("note").value;
 
-      if (!amountInput || isNaN(amountInput)) {
+      if (!amount || isNaN(amount)) {
         alert("请输入正确金额");
         return;
       }
 
-      const amountInCents = Math.round(parseFloat(amountInput) * 100);
-
-      const response = await fetch('/create-checkout-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: amountInCents,
-          customer_note: noteInput
-        })
-      });
-
-      const data = await response.json();
-      if (data.qrCode) {
-        document.getElementById('qr').src = data.qrCode;
-      } else {
-        alert("二维码生成失败");
-      }
+      // 用一个 Stripe 测试链接模拟跳转地址（你可以替换为你自己不同金额的 Stripe Link）
+      const stripeLink = `https://buy.stripe.com/test_abc123?amount=${amount}&note=${encodeURIComponent(note)}`;
+      
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(stripeLink)}`;
+      
+      document.getElementById("qr").src = qrUrl;
     }
   </script>
 </body>
