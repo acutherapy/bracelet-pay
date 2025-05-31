@@ -5,27 +5,41 @@
   <title>Stripe QR Payment</title>
 </head>
 <body>
-  <h1>Scan the QR Code to Pay</h1>
-  <img id="qr" src="" alt="QR Code will appear here" width="300" />
+  <h1>💰 输入金额并扫码付款</h1>
+  <label>金额（美元）：<input type="number" id="amount" step="0.01" placeholder="例如 49.99" /></label><br/><br/>
+  <label>备注 / 姓名 / 款式：<input type="text" id="note" placeholder="例如 Lisa, 粉水晶 + 生命数字 7" /></label><br/><br/>
+  <button onclick="generateQRCode()">生成二维码</button>
+  <br/><br/>
+  <img id="qr" src="" alt="二维码将显示在这里" width="300" />
+
   <script>
     async function generateQRCode() {
+      const amountInput = document.getElementById('amount').value;
+      const noteInput = document.getElementById('note').value;
+
+      if (!amountInput || isNaN(amountInput)) {
+        alert("请输入正确金额");
+        return;
+      }
+
+      const amountInCents = Math.round(parseFloat(amountInput) * 100);
+
       const response = await fetch('/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: 4999 }) // $49.99
+        body: JSON.stringify({
+          amount: amountInCents,
+          customer_note: noteInput
+        })
       });
 
       const data = await response.json();
-      console.log('QR Code data:', data);
-
       if (data.qrCode) {
         document.getElementById('qr').src = data.qrCode;
       } else {
-        alert("QR Code generation failed.");
+        alert("二维码生成失败");
       }
     }
-
-    generateQRCode();
   </script>
 </body>
 </html>
