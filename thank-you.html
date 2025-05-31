@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><title>付款成功</title></head>
+<body>
+  <h1>🎉 感谢您的购买！</h1>
+  <p id="note"></p>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const note = params.get("note");
+    document.getElementById("note").textContent = note ? `备注：${note}` : '';
+  </script>
+</body>
+</html>
